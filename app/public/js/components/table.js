@@ -2,6 +2,8 @@
 
 module.exports = function () {
 
+    //-------------------------------------------------------------------------
+
     function http(url, method, data = null) {
 
         return new Promise(function (resolve, reject) {
@@ -9,6 +11,8 @@ module.exports = function () {
             var xhr = new XMLHttpRequest();
 
             xhr.open(method, url, true);
+
+            xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
             xhr.onload = function () {
 
@@ -40,11 +44,16 @@ module.exports = function () {
 
     }
 
+    //-------------------------------------------------------------------------
+
     http("/users", "GET")
-        .then(response => showTableUsers(response), error => alert(`Rejected: ${error}`)
-            .catch(error => {
-                alert(error);
-            }));
+        .then(response => showTableUsers(response), error => alert(`Rejected: ${error}`))
+        .then(response => addToUsersDeleteEvent(), error => alert(`Rejected: ${error}`))
+        .catch(error => {
+            alert(`Rejected: ${error}`);
+        });
+
+    //-------------------------------------------------------------------------
 
     function showTableUsers(response) {
 
@@ -66,7 +75,7 @@ module.exports = function () {
 
                             // console.log(currentUser + " = " + idUser);
 
-                            trElement.innerHTML = `<td>${idUser}</td><td>${currentUser.name}</td><td><a href="#delete${idUser}" ><span class="deleteUser">Удалить</span></a> | <a href="#update${idUser}">Изменить</a></td><td> <form action="" class="form-inline"><div class="form-group"> <label for="updateName" class="sr-only">Имя </label> <input class="form-control" type="text" id="${idUser}updateName" value=""> </div> &nbsp; <button id="${idUser}sendUpdate" type="submit" class="btn btn-primary updateUser">Изменить</button> </form></td>`
+                            trElement.innerHTML = `<td>${idUser}</td><td>${currentUser.name}</td><td><a href="#delete${idUser}" class="deleteUser"><span>Удалить</span></a> | <a href="#update${idUser}">Изменить</a></td><td> <form action="" class="form-inline"><div class="form-group"> <label for="updateName" class="sr-only">Имя </label> <input class="form-control" type="text" id="${idUser}updateName" value=""> </div> &nbsp; <button id="${idUser}sendUpdate" type="submit" class="btn btn-primary updateUser">Изменить</button> </form></td>`
 
                             document.getElementById('users-body').appendChild(trElement);
                         }
@@ -84,4 +93,106 @@ module.exports = function () {
         });
     }
 
+    //-------------------------------------------------------------------------
+
+    function addToUsersDeleteEvent() {
+
+        return new Promise(function (resolve, reject) {
+
+            try {
+
+                let itemsDelete = document.getElementsByClassName("deleteUser");
+
+                for (let i = 0, len = itemsDelete.length; i < len; i++) {
+
+                    itemsDelete[i].addEventListener('click', deleteUser(i), false);
+
+                }
+
+                resolve();
+
+            } catch (e) {
+
+                reject(e);
+
+            }
+
+        });
+
+    }
+
+    //-------------------------------------------------------------------------
+
+    function setDeletedElement(deletedElement, elems){
+
+        let blokedElement = document.getElementById(elems[deletedElement].getAttribute('id'));
+
+        blokedElement.innerHTML = `<td>X</td><td>XXXXXXXXX</td><td>XXXXXXXXXXXXXXXXXXXXXXXXX</td><td> </td>`;
+    }
+
+    //-------------------------------------------------------------------------
+
+    function deleteUser(positionElement) {
+
+        return function (e) {
+
+            return new Promise(function (resolve, reject) {
+
+                try {
+
+                    // alert(e.currentTarget);
+
+                    let usersAttribute = document.getElementById('users-body');
+
+                    let elems = usersAttribute.getElementsByTagName('tr');
+
+                    console.log(">> " + parseInt(elems[positionElement].getAttribute('id')) + " <<");
+
+                    let idUser = parseInt(elems[positionElement].getAttribute('id'));
+
+                    http(`/users/${idUser}`, 'DELETE')
+                        .then(response => alert(response), error => alert(`Rejected: ${error}`))
+                        .catch(error => {
+                            alert(error);
+                        });
+
+                    let blokedElement = document.getElementById(elems[positionElement].getAttribute('id'));
+
+                    blokedElement.innerHTML = `<td>X</td><td>XXXXXXXXX</td><td>XXXXXXXXXXXXXXXXXXXXXXXXX</td><td> </td>`;
+
+                } catch (e) {
+
+                    reject(e);
+
+                }
+
+            });
+        }
+    }
+
+    document.getElementById('postName').onclick = function () {
+
+        return new Promise(function (resolve, reject) {
+
+            try {
+
+                let jsonData = JSON.stringify({
+
+                    name: document.getElementById('inputName').value
+
+                });
+
+                http("/users", "POST", jsonData)
+                    .then(response => alert(response), error => alert(`Rejected: ${error}`))
+                    .catch(error => {
+                        alert(error);
+                    });
+
+            } catch (e) {
+
+                reject(e);
+
+            }
+        });
+    }
 };

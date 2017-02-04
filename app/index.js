@@ -53,6 +53,9 @@ router.put('/users/:id', bodyParser(), async(ctx, next) => {
  * @example curl -v -X DELETE "http://127.0.0.1:3000/users/1"
  */
 router.del("/users/:id", async(ctx, next) => {
+
+    console.log("test");
+
     try {
         await usersModel.remove(ctx.params.id)
         ctx.status = 204;
