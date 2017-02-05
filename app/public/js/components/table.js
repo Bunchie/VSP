@@ -48,7 +48,7 @@ module.exports = function () {
 
     http("/users", "GET")
         .then(response => showTableUsers(response), error => console.log(`Rejected: ${error}`))
-        .then(response => addToUsersDeleteEvent(response), error => console.log(`Rejected: ${error}`))
+        .then(response => addToUsersEvents(response), error => console.log(`Rejected: ${error}`))
         .catch(error => {console.log(`Rejected: ${error}`);});
 
     //-------------------------------------------------------------------------
@@ -73,7 +73,7 @@ module.exports = function () {
 
                             // console.log(currentUser + " = " + idUser);
 
-                            trElement.innerHTML = `<td>${idUser}</td><td>${currentUser.name}</td><td><input type="button" class="deleteUser" style="color: red" value="Удалить"> | <a href="#update${idUser}">Изменить</a></td><td> <form action="" class="form-inline"><div class="form-group"> <label for="updateName" class="sr-only">Имя </label> <input class="form-control" type="text" id="${idUser}updateName" value=""> </div> &nbsp; <button id="${idUser}sendUpdate" type="submit" class="btn btn-primary updateUser">Изменить</button> </form></td>`
+                            trElement.innerHTML = `<td class="alert alert-success">${idUser}</td><td class="alert alert-success">${currentUser.name}</td><td class="alert alert-success"><input type="button" class="deleteUser" style="color: red" value="Удалить"> | <input type="button" style="color: blue" value="Изменить"</td><td class="alert alert-success"> <form action="" class="form-inline" style="display: "><div class="form-group"> <label for="update-user" class="sr-only">Имя </label> <input class="form-control update-user" id="${idUser}findNewValue" type="text" value=""> </div> &nbsp; <button type="" class="btn btn-primary updateUser">Изменить</button> </form></td>`
 
                             document.getElementById('users-body').appendChild(trElement);
                         }
@@ -87,14 +87,14 @@ module.exports = function () {
                     reject(e);
                 }
 
-            }, 10);
+            }, 50);
 
         });
     }
 
     //-------------------------------------------------------------------------
 
-    function addToUsersDeleteEvent(response) {
+    function addToUsersEvents(response) {
 
         // console.info(response);
 
@@ -107,6 +107,14 @@ module.exports = function () {
                 for (let i = 0, len = itemsDelete.length; i < len; i++) {
 
                     itemsDelete[i].addEventListener('click', deleteUser(i), false);
+
+                }
+
+                let itemsUpdate = document.getElementsByClassName("updateUser");
+
+                for (let i = 0, len = itemsDelete.length; i < len; i++) {
+
+                    itemsUpdate[i].addEventListener('click', updateUser(i), false);
 
                 }
 
@@ -162,6 +170,62 @@ module.exports = function () {
         }
     }
 
+    //-------------------------------------------------------------------------
+
+    function updateUser(positionElement) {
+
+        return function (e) {
+
+            return new Promise(function (resolve, reject) {
+
+                try {
+
+                    // alert(e.currentTarget);
+
+                    let usersBody = document.getElementById('users-body');
+
+                    let usersTr = usersBody.getElementsByTagName('tr');
+
+                    console.log(">> " + parseInt(usersTr[positionElement].getAttribute('id')) + " <<");
+
+                    let idUser = parseInt(usersTr[positionElement].getAttribute('id'));
+
+                    let newUserValue = document.getElementById(`${idUser}findNewValue`).value;
+
+                    // alert(newUserValue);
+
+                    let jsonData = JSON.stringify({
+
+                        name: newUserValue
+
+                    });
+
+                   http(`/users/${idUser}`, "PUT", jsonData)
+                        .then(response => console.log(response), error => console.log(`Rejected: ${error}`))
+                        .catch(error => {console.log(`Rejected: ${error}`);});
+
+                    usersBody.innerHTML = '';
+
+                    http("/users", "GET")
+                        .then(response => showTableUsers(response), error => console.log(`Rejected: ${error}`))
+                        .then(response => addToUsersEvents(response), error => console.log(`Rejected: ${error}`))
+                        .catch(error => {console.log(`Rejected: ${error}`);});
+
+                    resolve(true);
+
+                } catch (e) {
+
+                    reject(e);
+
+                }
+
+            });
+        }
+    }
+
+
+    //-------------------------------------------------------------------------
+
     document.getElementById('postName').onclick = function () {
 
         return new Promise(function (resolve, reject) {
@@ -184,7 +248,7 @@ module.exports = function () {
 
                 http("/users", "GET")
                     .then(response => showTableUsers(response), error => console.log(`Rejected: ${error}`))
-                    .then(response => addToUsersDeleteEvent(response), error => console.log(`Rejected: ${error}`))
+                    .then(response => addToUsersEvents(response), error => console.log(`Rejected: ${error}`))
                     .catch(error => {console.log(`Rejected: ${error}`);});
 
                 resolve(" Добавленно нового пользователя ! ");

@@ -44,6 +44,7 @@ router.post('/users', bodyParser(), async(ctx, next) => {
  */
 router.put('/users/:id', bodyParser(), async(ctx, next) => {
     try {
+        console.log(ctx.params.id, ctx.request.body);
         await usersModel.update(ctx.params.id, ctx.request.body);
         ctx.status = 200;
     } catch (e) {
