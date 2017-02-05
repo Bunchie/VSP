@@ -73,7 +73,7 @@ module.exports = function () {
 
                             // console.log(currentUser + " = " + idUser);
 
-                            trElement.innerHTML = `<td class="alert alert-success">${idUser}</td><td class="alert alert-success">${currentUser.name}</td><td class="alert alert-success"><input type="button" class="deleteUser" style="color: red" value="Удалить"> | <input type="button" style="color: blue" value="Изменить"</td><td class="alert alert-success"> <form action="" class="form-inline" style="display: "><div class="form-group"> <label for="update-user" class="sr-only">Имя </label> <input class="form-control update-user" id="${idUser}findNewValue" type="text" value=""> </div> &nbsp; <button type="" class="btn btn-primary updateUser">Изменить</button> </form></td>`
+                            trElement.innerHTML = `<td class="alert alert-success">${idUser}</td><td class="alert alert-success">${currentUser.name}</td><td class="alert alert-success"><input type="button" class="deleteUser" style="color: red" value="Удалить"> | <input type="button" style="color: blue" value="Изменить" class = "showFormForUpdate"></td><td class="alert alert-success"> <form action="" class="form-inline" id="${idUser}FormUpdateUser" style="display: none"><div class="form-group"> <label for="update-user" class="sr-only">Имя </label> <input class="form-control update-user" id="${idUser}findNewValue" type="text" value=""> </div> &nbsp; <button type="" class="btn btn-primary updateUser">Изменить</button> </form></td>`
 
                             document.getElementById('users-body').appendChild(trElement);
                         }
@@ -107,6 +107,14 @@ module.exports = function () {
                 for (let i = 0, len = itemsDelete.length; i < len; i++) {
 
                     itemsDelete[i].addEventListener('click', deleteUser(i), false);
+
+                }
+
+                let itemsShowFormUpdate = document.getElementsByClassName('showFormForUpdate');
+
+                for (let i = 0, len = itemsShowFormUpdate.length; i < len; i++) {
+
+                    itemsShowFormUpdate[i].addEventListener('click', showUpdateForm(i), false);
 
                 }
 
@@ -168,6 +176,49 @@ module.exports = function () {
 
             });
         }
+    }
+
+    //-------------------------------------------------------------------------
+
+    function showUpdateForm(positionElement){
+
+        return function (e) {
+
+            return new Promise(function (resolve, reject) {
+
+                try {
+
+                    // alert(e.currentTarget);
+
+                    let usersBody = document.getElementById('users-body');
+
+                    let usersTr = usersBody.getElementsByTagName('tr');
+
+                    console.log(">> " + parseInt(usersTr[positionElement].getAttribute('id')) + " <<");
+
+                    let idUser = parseInt(usersTr[positionElement].getAttribute('id'));
+
+                    let getUpdateForm = document.getElementById(`${idUser}FormUpdateUser`);
+
+                    // alert(getUpdateForm);
+
+                    //document.getElementById(block_4_close).style.display='none';
+
+                    //document.getElementById(block_4_open).style.display='';
+
+                    getUpdateForm.style.display='';
+
+                    resolve(true);
+
+                } catch (e) {
+
+                    reject(e);
+
+                }
+
+            });
+        }
+
     }
 
     //-------------------------------------------------------------------------
