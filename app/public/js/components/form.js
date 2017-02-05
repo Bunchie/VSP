@@ -1,5 +1,15 @@
 "use strict";
 
 module.exports = function () {
-    console.log(">> form component <<");
+
+    let ok = prompt("Почему роботы никогда не боятся?", "");
+
+    if (ok === "Потому что у них стальные нервы")
+
+        alert("Ты абсолютно прав !");
+
+    else
+
+        alert("Правильный ответ - Потому что у них стальные нервы !");
+
 };

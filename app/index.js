@@ -44,7 +44,6 @@ router.post('/users', bodyParser(), async(ctx, next) => {
  */
 router.put('/users/:id', bodyParser(), async(ctx, next) => {
     try {
-        console.log(ctx.params.id, ctx.request.body);
         await usersModel.update(ctx.params.id, ctx.request.body);
         ctx.status = 200;
     } catch (e) {
@@ -56,8 +55,6 @@ router.put('/users/:id', bodyParser(), async(ctx, next) => {
  * @example curl -v -X DELETE "http://127.0.0.1:3000/users/1"
  */
 router.del("/users/:id", async(ctx, next) => {
-
-    // console.log("test");
 
     try {
         await usersModel.remove(ctx.params.id)
