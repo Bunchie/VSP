@@ -14,6 +14,7 @@ const config = require("config");
  * @example curl -v -X GET "http://127.0.0.1:3000/users"
  */
 router.get("/users", async(ctx, next) => {
+    ctx.status = 200;
     ctx.body = await usersModel.getAll();
 });
 
@@ -21,6 +22,7 @@ router.get("/users", async(ctx, next) => {
  * @example curl -v -X GET "http://127.0.0.1:3000/users/1"
  */
 router.get("/users/:id", async(ctx, next) => {
+    ctx.status = 200;
     ctx.body = await usersModel.getById(ctx.params.id);
 });
 
@@ -30,7 +32,7 @@ router.get("/users/:id", async(ctx, next) => {
 router.post('/users', bodyParser(), async(ctx, next) => {
     let userId = await usersModel.add(ctx.request.body);
     if (typeof userId === 'number') {
-        ctx.status = 201;
+        ctx.status = 200;
         ctx.body = {"id": userId};
     } else {
         ctx.status = 400;
@@ -54,11 +56,11 @@ router.put('/users/:id', bodyParser(), async(ctx, next) => {
  */
 router.del("/users/:id", async(ctx, next) => {
 
-    console.log("test");
+    // console.log("test");
 
     try {
         await usersModel.remove(ctx.params.id)
-        ctx.status = 204;
+        ctx.status = 200;
     } catch (e) {
         ctx.status = 400
     }
