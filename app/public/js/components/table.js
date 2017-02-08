@@ -13,7 +13,7 @@ module.exports = function () {
 
             var xhr = new XMLHttpRequest();
 
-            xhr.open(method, url, true);
+            xhr.open(method, url, false);
 
             xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
